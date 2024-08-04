@@ -30,6 +30,9 @@ importers:
       '@formkit/nuxt':
         specifier: ^1.6.5
         version: 1.6.5(magicast@0.3.4)(rollup@4.19.2)(tailwindcss@3.4.7)(vite@5.3.5(@types/node@22.1.0)(terser@5.31.3))(vue@3.4.35(typescript@5.5.4))
+      '@formkit/pro':
+        specifier: ^0.126.16
+        version: 0.126.16(@formkit/core@1.6.5)(@formkit/inputs@1.6.5)
       '@formkit/utils':
         specifier: ^1.6.5
         version: 1.6.5
@@ -690,6 +693,9 @@ packages:
   '@formkit/dev@1.6.5':
     resolution: {integrity: sha512-dg62HTehLPi9lLBShixr9AoYgIv13gpxTZgiHEvf1UZz2HQq0Lcp63d0a+XT/tQ2HTz2ewLUGeXSN9dUVkYFSg==}
 
+  '@formkit/drag-and-drop@0.0.38':
+    resolution: {integrity: sha512-3uJFcqz1xL7x/5pClDnyqEDfyFRDFH+75MFpJYXnVF17oekxLrwbUaOBN7ttKGn1jW2MdojRw4WMnSN1iLryvw==}
+
   '@formkit/i18n@1.6.5':
     resolution: {integrity: sha512-mM1UKGSa0Mdd8a8AAF+6BCNFnf8gUD1nOzU6dJ9UoPE8M/qA+hmcPR3PJm39p6e3OaT5O0Gn/J6JxgccPyWmGA==}
 
@@ -702,8 +708,17 @@ packages:
   '@formkit/observer@1.6.5':
     resolution: {integrity: sha512-3Vh2Pj6tHX3wosbNm5VvwVVlTI5Zq0FT3dl/+DAuaCG84abpTLoc3O0C2pmbQcDaJ4aCuxu3+tBmhY9J7qFXMQ==}
 
+  '@formkit/pro@0.126.16':
+    resolution: {integrity: sha512-Yfzs3522Gn2fGU9Rp8tK0oqdpTujyHyz1kinmDRvEHOoELefHNgy3wSjoeBmKc3uLADfIRFULhKAFo55ooVGBA==}
+    peerDependencies:
+      '@formkit/core': ^1.6.5
+      '@formkit/inputs': ^1.6.5
+
   '@formkit/rules@1.6.5':
     resolution: {integrity: sha512-j9ylAibBvNx+3tEAkYzl2HjQwDzWV2mRPmFH7GTAmtxijFiktPS8HTU9H88H/x2stkYk9S13/MMeqDgZnc3VrQ==}
+
+  '@formkit/tempo@0.1.2':
+    resolution: {integrity: sha512-jNPPbjL8oj7hK3eHX++CwbR6X4GKQt+x00/q4yeXkwynXHGKL27dylYhpEgwrmediPP4y7s0XtN1if/M/JYujg==}
 
   '@formkit/themes@1.6.5':
     resolution: {integrity: sha512-C+ANzH6qw4zS7niv+RamJAqpASOPfrZvMURVj5HQcT1XlcYB7ULvA9UmDW/AKOqP/OGf/OL6WvOzA7B16UkiiA==}
@@ -4962,6 +4977,8 @@ snapshots:
       '@formkit/core': 1.6.5
       '@formkit/utils': 1.6.5
 
+  '@formkit/drag-and-drop@0.0.38': {}
+
   '@formkit/i18n@1.6.5':
     dependencies:
       '@formkit/core': 1.6.5
@@ -5000,11 +5017,20 @@ snapshots:
       '@formkit/core': 1.6.5
       '@formkit/utils': 1.6.5
 
+  '@formkit/pro@0.126.16(@formkit/core@1.6.5)(@formkit/inputs@1.6.5)':
+    dependencies:
+      '@formkit/core': 1.6.5
+      '@formkit/drag-and-drop': 0.0.38
+      '@formkit/inputs': 1.6.5
+      '@formkit/tempo': 0.1.2
+
   '@formkit/rules@1.6.5':
     dependencies:
       '@formkit/core': 1.6.5
       '@formkit/utils': 1.6.5
       '@formkit/validation': 1.6.5
+
+  '@formkit/tempo@0.1.2': {}
 
   '@formkit/themes@1.6.5(tailwindcss@3.4.7)':
     dependencies:

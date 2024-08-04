@@ -19,6 +19,7 @@
     "@formkit/core": "^1.6.5",
     "@formkit/inputs": "^1.6.5",
     "@formkit/nuxt": "^1.6.5",
+    "@formkit/pro": "^0.126.16",
     "@formkit/utils": "^1.6.5",
     "@formkit/vue": "^1.6.5",
     "@nuxtjs/tailwindcss": "^6.12.1",
