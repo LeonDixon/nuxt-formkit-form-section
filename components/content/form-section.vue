@@ -48,6 +48,7 @@ const schemas: Record<string, FormKitSchemaDefinition> = {
     }
   ],
   coverPage: [
+    '$get("test-number").value',
     {
       if: '$get("test-number").value === 0',
       $formkit: 'text',
@@ -58,9 +59,8 @@ const schemas: Record<string, FormKitSchemaDefinition> = {
       $formkit: 'togglebuttons',
       name: 'async-togglebuttons',
       label: 'async togglebuttons',
-      options: ['test1', 'test2'],
-      onNode: () => {
-        console.log('ulad')
+      onNode: (node: FormKitNode) => {
+
       }
     },
     {
@@ -71,6 +71,9 @@ const schemas: Record<string, FormKitSchemaDefinition> = {
     }
   ]
 }
+onMounted(() => {
+  console.log('mounted')
+})
 
 </script>
 

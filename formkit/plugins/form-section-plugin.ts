@@ -26,17 +26,25 @@ export function formSectionPlugin(options: {
 
     const parentNode = node.parent
 
-    node.on('created', () => {
-      if (!node.context || !parentNode?.context) return
-      if (node.props.loadLocalStorageNodes && window) {
-        const localStorageId = options.localStoragePrefix ?? 'formkit'
-        const localStorageData = localStorage.getItem(`${localStorageId}-${parentNode?.name}`)
-        if (localStorageData) {
-          const { data } = JSON.parse(localStorageData)
-          getNodesFromGroup(data)
-          console.log('hit', data)
-        }
+    if (!node.context || !parentNode?.context) return
+    if (node.props.loadLocalStorageNodes && window) {
+      const localStorageId = options.localStoragePrefix ?? 'formkit'
+      const localStorageData = localStorage.getItem(`${localStorageId}-${parentNode?.name}`)
+      if (localStorageData) {
+        const { data } = JSON.parse(localStorageData)
+        const formNode = createNode({
+          type: 'group',
+          name: parentNode.context!.id,
+          props: {
+            useLocalStorage: true
+          }
+        })
+        getNodesFromGroup(data, formNode)
+        console.log('hit', data)
       }
+    }
+    node.on('created', () => {
+
     })
 
     node.on('destroying', () => {
@@ -53,16 +61,9 @@ export function formSectionPlugin(options: {
   return nuxtContentMultiStepPlugin
 }
 
-function getNodesFromGroup(node: object) {
+function getNodesFromGroup(node: object, parent: FormKitNode) {
   console.log(node)
   const childrenNodesIds = Object.keys(node)
-  const formNode = createNode({
-    type: 'group',
-    name: 'test-form',
-    props: {
-      useLocalStorage: true
-    }
-  })
   for (const childNodeId of childrenNodesIds) {
     if (!getNode(childNodeId)) {
 
@@ -75,6 +76,8 @@ function getNodesFromGroup(node: object) {
           value: childNodeValue
         })
 
+        parent.add(newNode)
+
         callbacksToDestroyNodes.push(() => newNode.destroy())
 
         console.log(newNode)
@@ -83,8 +86,12 @@ function getNodesFromGroup(node: object) {
 
       }
       else if (typeof childNodeValue === 'object') {
-        const formNode =
-          getNodesFromGroup(childNodeValue)
+        const newNode = createNode({
+          type: 'group',
+          name: childNodeId,
+          value: childNodeValue
+        })
+        getNodesFromGroup(childNodeValue, newNode)
       }
     }
   }
