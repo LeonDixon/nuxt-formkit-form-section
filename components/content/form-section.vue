@@ -53,6 +53,21 @@ const schemas: Record<string, FormKitSchemaDefinition> = {
       $formkit: 'text',
       name: 'if-test',
       label: 'test the if works'
+    },
+    {
+      $formkit: 'togglebuttons',
+      name: 'async-togglebuttons',
+      label: 'async togglebuttons',
+      options: ['test1', 'test2'],
+      onNode: () => {
+        console.log('ulad')
+      }
+    },
+    {
+      $formkit: 'dropdown',
+      name: 'async-dropdown',
+      label: 'async dropdown',
+      options: ['test1', 'test2']
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { createNode, type FormKitNode, type FormKitPlugin, type FormKitTypeDefinition } from "@formkit/core";
-import { createSection, wrapper, label, outer, inner, icon, prefix, suffix, help, messages, message, type FormKitSchemaExtendableSection, type FormKitInputs } from '@formkit/inputs'
+import { createSection, wrapper, label, outer, inner, icon, prefix, suffix, help, messages, message, type FormKitSchemaExtendableSection, type FormKitInputs, group } from '@formkit/inputs'
 
 declare module '@formkit/inputs' {
   interface FormKitInputProps<Props extends FormKitInputs<Props>> {
@@ -24,15 +24,7 @@ export function formSectionPlugin(options: {
     if (node.props.type !== 'form-section')
       return
 
-    node.addProps([
-      'currentStep',
-      'loadLocalStorageNodes'
-    ])
-
-    const localStorageNodes = []
     const parentNode = node.parent
-
-
 
     node.on('created', () => {
       if (!node.context || !parentNode?.context) return
@@ -64,8 +56,16 @@ export function formSectionPlugin(options: {
 function getNodesFromGroup(node: object) {
   console.log(node)
   const childrenNodesIds = Object.keys(node)
+  const formNode = createNode({
+    type: 'group',
+    name: 'test-form',
+    props: {
+      useLocalStorage: true
+    }
+  })
   for (const childNodeId of childrenNodesIds) {
     if (!getNode(childNodeId)) {
+
       const childNodeValue = node[childNodeId as keyof typeof node]
       console.log(childNodeValue, typeof childNodeValue)
       if (typeof childNodeValue === 'number' || typeof childNodeValue === 'string') {
@@ -83,7 +83,8 @@ function getNodesFromGroup(node: object) {
 
       }
       else if (typeof childNodeValue === 'object') {
-        getNodesFromGroup(childNodeValue)
+        const formNode =
+          getNodesFromGroup(childNodeValue)
       }
     }
   }
@@ -150,6 +151,8 @@ const formSectionStep: FormKitTypeDefinition = {
    * An array of extra props to accept for this input.
    */
   props: [
+    'currentStep',
+    'loadLocalStorageNodes'
   ],
   /**
    * Additional features that should be added to your input
