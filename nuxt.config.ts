@@ -5,5 +5,11 @@ export default defineNuxtConfig({
   modules: ["@nuxt/content", "@formkit/nuxt", "@nuxtjs/tailwindcss"],
   formkit: {
     autoImport: true
-  }
+  },
+  vite: {
+    build: {
+      minify: false
+    }
+  },
+  ssr: false
 })

@@ -1,5 +1,6 @@
-import { createNode, type FormKitNode, type FormKitPlugin, type FormKitTypeDefinition } from "@formkit/core";
+import { createNode, type FormKitNode, type FormKitPlugin, type FormKitProps, type FormKitTypeDefinition } from "@formkit/core";
 import { createSection, wrapper, label, outer, inner, icon, prefix, suffix, help, messages, message, type FormKitSchemaExtendableSection, type FormKitInputs, group } from '@formkit/inputs'
+import { clone } from "@formkit/utils";
 
 declare module '@formkit/inputs' {
   interface FormKitInputProps<Props extends FormKitInputs<Props>> {
@@ -15,46 +16,61 @@ declare module '@formkit/inputs' {
   }
 }
 
-const callbacksToDestroyNodes: (() => void)[] = []
+const sectionNodes: FormKitNode[] = []
+const sectionRegistery = new Map<string, FormKitNode>;
 
+function getSectionNode(id: string): FormKitNode | undefined {
+  console.log('hit', sectionRegistery.get(id))
+  setTimeout(() => {
+    console.log('hit', sectionRegistery.get(id))
+
+  }, 100)
+  return sectionRegistery.get(id)
+}
+
+const callbacksToDestroyNodes: (() => void)[] = []
 export function formSectionPlugin(options: {
   localStoragePrefix?: string
 } = {}): FormKitPlugin {
   const nuxtContentMultiStepPlugin = (node: FormKitNode) => {
+    if (!node.context) return
     if (node.props.type !== 'form-section')
       return
 
-    const parentNode = node.parent
+    sectionNodes.push(node)
+    node.context!.loaded = false
 
-    if (!node.context || !parentNode?.context) return
+    if (!node.parent)
+      throw new Error('lol get rekt')
+
+    const { parent } = node
     if (node.props.loadLocalStorageNodes && window) {
       const localStorageId = options.localStoragePrefix ?? 'formkit'
-      const localStorageData = localStorage.getItem(`${localStorageId}-${parentNode?.name}`)
+      const localStorageData = localStorage.getItem(`${localStorageId}-${parent.name}`)
       if (localStorageData) {
-        const { data } = JSON.parse(localStorageData)
-        const formNode = createNode({
-          type: 'group',
-          name: parentNode.context!.id,
-          props: {
-            useLocalStorage: true
+        const { data }: { data: object } = JSON.parse(localStorageData)
+        Object.keys(data).map((key) => {
+          if (!getNode(key)) {
+            const formNode = createNode({
+              type: 'group',
+              name: key + 1,
+              props: {
+                type: 'form',
+                id: key + 1
+              }
+            })
+            getNodesFromGroup(data[key as keyof typeof data], formNode)
+            node.context!.fns.getSectionNode = getSectionNode
+            node.on('destroying', () => {
+              sectionRegistery.clear()
+            })
           }
         })
-        getNodesFromGroup(data, formNode)
-        console.log('hit', data)
       }
     }
-    node.on('created', () => {
-
-    })
-
-    node.on('destroying', () => {
-      callbacksToDestroyNodes.forEach((callback) => callback())
-    })
   }
 
   nuxtContentMultiStepPlugin.library = (node: FormKitNode) => {
-    // switch (node.props.type) {
-    // case 'nuxt-content-multi-step':
     return node.define(formSectionStep)
   }
 
@@ -62,38 +78,50 @@ export function formSectionPlugin(options: {
 }
 
 function getNodesFromGroup(node: object, parent: FormKitNode) {
-  console.log(node)
+
   const childrenNodesIds = Object.keys(node)
   for (const childNodeId of childrenNodesIds) {
-    if (!getNode(childNodeId)) {
+    console.log('for', childNodeId)
+    if (getNode(childNodeId))
+      continue
+    const childNodeValue = node[childNodeId as keyof typeof node]
+    let newNode: FormKitNode
+    if (typeof childNodeValue === 'number' || typeof childNodeValue === 'string') {
+      newNode = createNode({
+        name: childNodeId,
+        props: {
+          id: childNodeId,
+          type: 'text'
+        },
+        value: childNodeValue
+      })
+      newNode.props.id = childNodeId
+      parent.add(newNode)
 
-      const childNodeValue = node[childNodeId as keyof typeof node]
-      console.log(childNodeValue, typeof childNodeValue)
-      if (typeof childNodeValue === 'number' || typeof childNodeValue === 'string') {
-        const newNode = createNode({
-          type: 'input',
-          name: childNodeId,
-          value: childNodeValue
-        })
-
-        parent.add(newNode)
-
-        callbacksToDestroyNodes.push(() => newNode.destroy())
-
-        console.log(newNode)
-      }
-      else if (Array.isArray(childNodeValue)) {
-
-      }
-      else if (typeof childNodeValue === 'object') {
-        const newNode = createNode({
-          type: 'group',
-          name: childNodeId,
-          value: childNodeValue
-        })
-        getNodesFromGroup(childNodeValue, newNode)
-      }
     }
+    else if (Array.isArray(childNodeValue)) {
+
+    }
+    else if (typeof childNodeValue === 'object') {
+      console.log(childNodeId)
+      newNode = createNode({
+        type: 'group',
+        name: childNodeId,
+        props: {
+          type: 'group',
+          id: childNodeId
+        },
+        value: childNodeValue
+      })
+
+      parent.add(newNode)
+
+      getNodesFromGroup(childNodeValue, newNode)
+    }
+    console.log('end')
+    console.log('test', childNodeId, newNode!)
+    sectionRegistery.set(childNodeId, newNode!)
+    console.log('seciton', getSectionNode(childNodeId))
   }
 }
 

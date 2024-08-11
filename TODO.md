@@ -28,3 +28,7 @@ two steps on the page which are demands and coverpage, coverpage needs informati
 #### solution
 1. tell the other steps which steps are going to be rendered in the page, if the other steps aren't render then try and create the step if it doesn't exists so it is in the registry, this will be done via if logic which stops multiple nodes being added for the same step.
 
+
+
+### using one form with multiple sections
+On a page load, check to see if a form section is used, if so create a form node which will append the form nodes, once it is created, add the remaining form data from local storage 

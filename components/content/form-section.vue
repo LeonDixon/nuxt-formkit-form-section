@@ -8,60 +8,18 @@ const props = defineProps<{
   loadLocalStorageNodes?: boolean
 }>()
 
-const schemas: Record<string, FormKitSchemaDefinition> = {
-  demands: [
-    {
-      $formkit: 'text',
-      name: 'loser-firstname',
-      label: 'Loser Firstname',
-      id: 'loser-firstname',
-    },
-    {
-      $formkit: 'text',
-      name: 'loser-surename',
-      label: 'Loser Surname',
-      id: 'loser-surename',
-    },
-    {
-      $formkit: 'group',
-      name: 'test-group',
-      children: [
-        {
-          $formkit: 'text',
-          name: 'group-loser-firstname',
-          label: 'group Loser Firstname',
-          id: 'group-loser-firstname',
-        },
-        {
-          $formkit: 'text',
-          name: 'group-loser-surename',
-          label: 'group Loser Surname',
-          id: 'group-loser-surename',
-        },
-        {
-          $formkit: 'number',
-          name: 'test-number',
-          id: 'test-number',
-          number: "integer"
-        }
-      ]
-    }
-  ],
-  coverPage: [
-    '$get("test-number").value',
-    {
-      if: '$get("test-number").value === 0',
-      $formkit: 'text',
-      name: 'if-test',
-      label: 'test the if works'
-    },
+const coverPageFormSection: FormKitSchemaDefinition = {
+  $formkit: 'form-section',
+  name: 'coverPage',
+  id: 'coverPage',
+  loadLocalStorageNodes: true,
+  children: [
+    '$: $fns.getSectionNode("level-1").value',
+    '$fns.getSectionNode("level-2").value',
     {
       $formkit: 'togglebuttons',
       name: 'async-togglebuttons',
       label: 'async togglebuttons',
-      onNode: (node: FormKitNode) => {
-
-      }
     },
     {
       $formkit: 'dropdown',
@@ -71,17 +29,50 @@ const schemas: Record<string, FormKitSchemaDefinition> = {
     }
   ]
 }
+
+const demandsFormSection: FormKitSchemaDefinition = {
+  $formkit: 'form-section',
+  name: 'demands',
+  id: 'demands',
+  loadLocalStorageNodes: true,
+  children: [
+    {
+      $formkit: 'text',
+      name: 'level-1',
+      label: 'level 1',
+      id: 'level-1',
+    },
+    {
+      $formkit: 'group',
+      name: 'test-group',
+      children: [
+        {
+          $formkit: 'text',
+          name: 'level-2',
+          label: 'level 2',
+          id: 'level-2',
+        },
+      ]
+    }
+  ]
+}
+
 onMounted(() => {
-  console.log('mounted')
+  console.log(getNode('demands'))
+  console.log(getNode('coverPage'))
+
+  setTimeout(() => {
+    console.log(getNode('level-1'))
+
+  }, 10)
 })
 
+const schema = props.name === 'demands' ? demandsFormSection : coverPageFormSection
 </script>
 
 <template>
-  <FormKit type="form" name="test-form" use-local-storage>
-    <FormKit type="form-section" :name :label :loadLocalStorageNodes>
-      <FormKitSchema :schema="schemas[props.name]" />
-    </FormKit>
+  <FormKit type="form" name="test-form" id="test-form" use-local-storage>
+    <FormKitSchema :schema="schema" />
   </FormKit>
 </template>
 
